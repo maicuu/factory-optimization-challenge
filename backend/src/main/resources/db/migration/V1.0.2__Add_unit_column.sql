@@ -1,0 +1,1 @@
+ALTER TABLE raw_materials ADD COLUMN unit VARCHAR(10) NOT NULL DEFAULT 'un';

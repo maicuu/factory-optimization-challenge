@@ -1,0 +1,50 @@
+# =============================================================================
+# GITIGNORE - FACTORY OPTIMIZATION PROJECT
+# =============================================================================
+
+# --- OS / IDE ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.log
+.settings/
+.classpath
+.project
+
+# --- BACKEND (JAVA / QUARKUS / MAVEN) ---
+**/target/
+**/.mvn/wrapper/maven-wrapper.jar
+**/build/
+**/.quarkus/
+bin/
+*.class
+*.jar
+*.war
+*.ear
+
+# --- FRONTEND (NODE / VUE / VITE) ---
+**/node_modules/
+**/dist/
+**/stats.html
+**/.eslintcache
+**/.stylelintcache
+
+# --- TESTING (CYPRESS / VITEST) ---
+**/cypress/videos/
+**/cypress/screenshots/
+**/cypress/downloads/
+**/coverage/
+**/.vitest/
+
+# --- INFRA / DOCKER / ENV ---
+**/.env
+**/.env.local
+**/.env.*.local
+**/.docker/
+**/postgres-data/
+
+# --- DATABASE / TEMP ---
+*.sql.bak
+*.tmp
