@@ -3,6 +3,9 @@ package com.factory.opt.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotNull;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "product_compositions")
@@ -21,8 +24,10 @@ public class ProductComposition extends PanacheEntityBase {
     @JoinColumn(name = "raw_material_id", nullable = false)
     public RawMaterial rawMaterial;
 
-    @Column(name = "quantity_needed", nullable = false)
-    public Double quantityNeeded;
+    @NotNull
+    @DecimalMin(value = "0.0001")
+    @Column(name = "quantity_needed", nullable = false, precision = 15, scale = 4)
+    public BigDecimal quantityNeeded;
 
     public ProductComposition() {}
 }

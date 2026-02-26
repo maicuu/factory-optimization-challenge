@@ -4,6 +4,7 @@ import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "raw_materials")
@@ -14,7 +15,7 @@ public class RawMaterial extends PanacheEntityBase {
     public Long id;
 
     @NotBlank
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 50)
     @Schema(examples = {"RM-WOOD"})
     public String code;
 
@@ -24,9 +25,10 @@ public class RawMaterial extends PanacheEntityBase {
     public String name;
 
     @NotNull
-    @Column(name = "stock_quantity", nullable = false)
-    @Schema(examples = {"100.0"})
-    public Double stockQuantity;
+    @DecimalMin(value = "0.0000")
+    @Column(name = "stock_quantity", nullable = false, precision = 15, scale = 4)
+    @Schema(examples = {"100.0000"})
+    public BigDecimal stockQuantity;
 
     @NotBlank
     @Column(length = 10, nullable = false)

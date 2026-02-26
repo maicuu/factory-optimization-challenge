@@ -11,6 +11,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @QuarkusTest
@@ -22,7 +24,6 @@ class OptimizationServiceTest {
     @BeforeEach
     @Transactional
     void setup() {
-        
         ProductComposition.deleteAll();
         Product.deleteAll();
         RawMaterial.deleteAll();
@@ -32,43 +33,46 @@ class OptimizationServiceTest {
     @Transactional
     @DisplayName("Cenário: O produto mais caro NÃO é o mais lucrativo (Conflito de Insumo)")
     void testExpensiveProductIsNotAlwaysTheBest() {
-        
+        // 1. Setup Material
         RawMaterial gold = new RawMaterial();
         gold.code = "RM-GOLD";
         gold.name = "Gold";
-        gold.stockQuantity = 10.0;
+        gold.stockQuantity = BigDecimal.valueOf(10.0);
+        gold.unit = "g";
         gold.persist();
 
-        
+        // 2. Setup Produto A (Caro, mas consome muito recurso)
+        // Densidade: 1000 / 10 = 100 por grama
         Product prodA = new Product();
         prodA.code = "PRD-A";
         prodA.name = "Heavy Gold Ring";
-        prodA.price = 1000.0;
+        prodA.price = BigDecimal.valueOf(1000.0);
         prodA.persist();
 
         ProductComposition compA = new ProductComposition();
         compA.product = prodA;
         compA.rawMaterial = gold;
-        compA.quantityNeeded = 10.0;
+        compA.quantityNeeded = BigDecimal.valueOf(10.0);
         compA.persist();
 
-        
+        // 3. Setup Produto B (Barato, mas muito eficiente)
+        // Densidade: 200 / 1 = 200 por grama -> PRIORIDADE
         Product prodB = new Product();
         prodB.code = "PRD-B";
         prodB.name = "Light Gold Earring";
-        prodB.price = 200.0;
+        prodB.price = BigDecimal.valueOf(200.0);
         prodB.persist();
 
         ProductComposition compB = new ProductComposition();
         compB.product = prodB;
         compB.rawMaterial = gold;
-        compB.quantityNeeded = 1.0;
+        compB.quantityNeeded = BigDecimal.valueOf(1.0);
         compB.persist();
 
-        
+        // 4. Execução
         ProductionPlanDTO plan = optimizationService.calculateOptimalProduction();
 
-        
+        // 5. Validações
         assertEquals(2000.0, plan.maxTotalValue, "O lucro máximo deve ser 2000 (10x Produto B)");
         assertEquals(1, plan.items.size(), "Deve fabricar apenas 1 tipo de produto");
         assertEquals("PRD-B", plan.items.get(0).productCode, "Deve priorizar o produto B");
@@ -82,19 +86,20 @@ class OptimizationServiceTest {
         RawMaterial iron = new RawMaterial();
         iron.code = "RM-IRON";
         iron.name = "Iron";
-        iron.stockQuantity = 2.0;
+        iron.stockQuantity = BigDecimal.valueOf(2.0);
+        iron.unit = "kg";
         iron.persist();
 
         Product prodC = new Product();
         prodC.code = "PRD-C";
         prodC.name = "Iron Gate";
-        prodC.price = 500.0;
+        prodC.price = BigDecimal.valueOf(500.0);
         prodC.persist();
 
         ProductComposition compC = new ProductComposition();
         compC.product = prodC;
         compC.rawMaterial = iron;
-        compC.quantityNeeded = 10.0; 
+        compC.quantityNeeded = BigDecimal.valueOf(10.0); 
         compC.persist();
 
         ProductionPlanDTO plan = optimizationService.calculateOptimalProduction();

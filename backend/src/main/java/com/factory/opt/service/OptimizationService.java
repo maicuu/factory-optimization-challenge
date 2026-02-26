@@ -7,6 +7,9 @@ import com.factory.opt.entity.ProductComposition;
 import com.factory.opt.entity.RawMaterial;
 import jakarta.enterprise.context.ApplicationScoped;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -17,52 +20,57 @@ public class OptimizationService {
         return calculateOptimalProduction(Collections.emptyMap());
     }
 
-    public ProductionPlanDTO calculateOptimalProduction(Map<Long, Double> simulatedExtraStock) {
+    public ProductionPlanDTO calculateOptimalProduction(Map<Long, BigDecimal> simulatedExtraStock) {
         List<Product> products = Product.listAll();
         List<RawMaterial> materials = RawMaterial.listAll();
 
-        Map<Long, Double> currentStock = new HashMap<>();
+        Map<Long, BigDecimal> currentStock = new HashMap<>();
         for (RawMaterial rm : materials) {
-            double extra = simulatedExtraStock.getOrDefault(rm.id, 0.0);
-            currentStock.put(rm.id, rm.stockQuantity + extra);
+            BigDecimal extra = simulatedExtraStock.getOrDefault(rm.id, BigDecimal.ZERO);
+            currentStock.put(rm.id, rm.stockQuantity.add(extra));
         }
 
         List<Product> sortedProducts = products.stream()
-                .sorted((p1, p2) -> Double.compare(calculateProfitDensity(p2), calculateProfitDensity(p1)))
+                .sorted((p1, p2) -> calculateProfitDensity(p2).compareTo(calculateProfitDensity(p1)))
                 .collect(Collectors.toList());
 
         List<ProductionItemDTO> planItems = new ArrayList<>();
-        double totalValue = 0.0;
+        BigDecimal totalValue = BigDecimal.ZERO;
 
         for (Product product : sortedProducts) {
             int canProduce = calculateMaxProductionQty(product, currentStock);
             if (canProduce > 0) {
                 deductStock(product, currentStock, canProduce);
-                double itemTotal = canProduce * product.price;
+                
+                BigDecimal itemTotal = product.price.multiply(BigDecimal.valueOf(canProduce));
+                
+                
                 planItems.add(new ProductionItemDTO(product.code, product.name, canProduce, itemTotal));
-                totalValue += itemTotal;
+                totalValue = totalValue.add(itemTotal);
             }
         }
 
+        
         return new ProductionPlanDTO(planItems, totalValue);
     }
 
-    private double calculateProfitDensity(Product p) {
-        double totalResourcesNeeded = p.compositions.stream()
-                .mapToDouble(comp -> comp.quantityNeeded)
-                .sum();
+    private BigDecimal calculateProfitDensity(Product p) {
+        BigDecimal totalResourcesNeeded = p.compositions.stream()
+                .map(comp -> comp.quantityNeeded)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
         
-        if (totalResourcesNeeded == 0) return 0.0;
-        return p.price / totalResourcesNeeded;
+        if (totalResourcesNeeded.compareTo(BigDecimal.ZERO) == 0) return BigDecimal.ZERO;
+        
+        return p.price.divide(totalResourcesNeeded, MathContext.DECIMAL128);
     }
 
-    private int calculateMaxProductionQty(Product product, Map<Long, Double> currentStock) {
+    private int calculateMaxProductionQty(Product product, Map<Long, BigDecimal> currentStock) {
         if (product.compositions == null || product.compositions.isEmpty()) return 0;
         
         int maxQty = Integer.MAX_VALUE;
         for (ProductComposition comp : product.compositions) {
-            double stockAvailable = currentStock.getOrDefault(comp.rawMaterial.id, 0.0);
-            int possibleWithThisMaterial = (int) (stockAvailable / comp.quantityNeeded);
+            BigDecimal stockAvailable = currentStock.getOrDefault(comp.rawMaterial.id, BigDecimal.ZERO);
+            int possibleWithThisMaterial = stockAvailable.divide(comp.quantityNeeded, 0, RoundingMode.DOWN).intValue();
             
             if (possibleWithThisMaterial < maxQty) {
                 maxQty = possibleWithThisMaterial;
@@ -71,10 +79,11 @@ public class OptimizationService {
         return maxQty == Integer.MAX_VALUE ? 0 : maxQty;
     }
 
-    private void deductStock(Product product, Map<Long, Double> currentStock, int qtyMultiplier) {
+    private void deductStock(Product product, Map<Long, BigDecimal> currentStock, int qtyMultiplier) {
         for (ProductComposition comp : product.compositions) {
-            double current = currentStock.get(comp.rawMaterial.id);
-            currentStock.put(comp.rawMaterial.id, current - (comp.quantityNeeded * qtyMultiplier));
+            BigDecimal current = currentStock.get(comp.rawMaterial.id);
+            BigDecimal consumption = comp.quantityNeeded.multiply(BigDecimal.valueOf(qtyMultiplier));
+            currentStock.put(comp.rawMaterial.id, current.subtract(consumption));
         }
     }
 }

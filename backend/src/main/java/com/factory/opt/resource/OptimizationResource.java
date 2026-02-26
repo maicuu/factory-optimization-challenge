@@ -8,6 +8,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+import java.math.BigDecimal;
 import java.util.Map;
 
 @Path("/api/optimization")
@@ -28,7 +29,7 @@ public class OptimizationResource {
     @POST
     @Path("/simulate")
     @Operation(summary = "Simulate production with extra stock")
-    public Response simulateProduction(Map<Long, Double> extraStock) {
+    public Response simulateProduction(Map<Long, BigDecimal> extraStock) {
         ProductionPlanDTO simulatedPlan = optimizationService.calculateOptimalProduction(extraStock);
         return Response.ok(simulatedPlan).build();
     }

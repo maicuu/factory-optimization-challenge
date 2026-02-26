@@ -7,32 +7,28 @@
 
 Sistema inteligente para gestão de inventário e otimização de mix de produção industrial. O motor de cálculo utiliza heurísticas avançadas para maximizar o faturamento com base em restrições de estoque de matérias-primas.
 
-
-
 ---
 
 ## 🧠 Arquitetura e Decisões Técnicas
 
 ### 1. Algoritmo de Otimização (Greedy Strategy)
-Diferente de soluções de força bruta, implementamos um **Algoritmo Guloso baseado em Densidade de Lucro (Profit Density)**.
-* **A Lógica:** O sistema calcula a razão $\frac{\text{Preço}}{\sum \text{Recursos}}$ para cada produto.
-* **Justificativa:** Em ambientes industriais com milhares de combinações, essa abordagem garante uma solução próxima da ideal com complexidade $O(n \log n)$, permitindo simulações de cenários (What-If) em tempo real sem sobrecarregar o servidor.
+Implementamos um **Algoritmo Guloso baseado em Densidade de Lucro (Profit Density)** para resolver o *Knapsack Problem*.
 
-
+* **Lógica:** O sistema calcula a razão entre o preço e a soma de recursos necessários para cada produto.
+* **Justificativa:** Complexidade O(n log n), ideal para simulações instantâneas.
 
 ### 2. Stack Tecnológica
-* **Backend:** Quarkus (Java 17) utilizando **Panache ORM** para persistência e **Bean Validation** para integridade dos dados.
-* **Frontend:** Vue.js 3 com **Composition API**, Tailwind CSS para UI responsiva e **Vue-i18n** para suporte multi-idioma (PT/EN).
-* **Banco de Dados:** PostgreSQL 16 com Schema otimizado e índices de alta performance para códigos de produtos.
+* **Backend:** Quarkus (Java 17), Panache ORM.
+* **Frontend:** Vue.js 3 (Composition API), Tailwind CSS.
+* **Banco de Dados:** PostgreSQL 16.
 
 ---
 
 ## 🛠️ Funcionalidades Principais
 
-* **Gestão de BOM (Bill of Materials):** Definição de receitas complexas para produtos finais.
-* **Identificação de Gargalos:** O dashboard aponta automaticamente qual insumo está limitando o lucro máximo.
-* **Análise Executiva "What-If":** Permite simular a compra de estoque adicional para prever o aumento real no faturamento antes do investimento.
-* **Internacionalização:** Interface 100% adaptável para mercados globais.
+* **Gestão de BOM:** Definição de receitas complexas para produtos finais.
+* **Identificação de Gargalos:** Dashboard aponta o insumo limitante.
+* **Análise "What-If":** Simulação de ROI sobre compra de estoque adicional.
 
 ---
 
@@ -50,31 +46,22 @@ docker-compose up --build
 3. Acessar as interfaces:
 Frontend: http://localhost:5173
 
-Swagger API (Docs): http://localhost:8080/q/swagger-ui
+---
 
-Banco de Dados: Porta 5432
-
-🧪 Qualidade de Software
-Testes Unitários e E2E
-O projeto conta com cobertura de testes nas camadas críticas:
-
-Frontend: Testes de componentes e estados com Vitest e Vue Test Utils.
-
-E2E: Fluxos completos de otimização e troca de idioma testados via Cypress.
-
-Para rodar os testes do frontend:
+## 🧪 Qualidade de Software
 
 Bash
 cd frontend
 npm test
-🗄️ Modelo de Dados (Schema)
-O banco de dados foi projetado para consistência máxima:
 
-raw_materials: Controle de insumos com restrições de estoque positivo.
+---
 
-products: Catálogo de produtos finais.
+## 🗄️ Modelo de Dados (Schema)
+* **raw_materials:** Controle de insumos.
+* **products:** Catálogo de produtos.
+* **product_compositions:** Receita (BOM) com integridade referencial.
 
-product_compositions: Tabela associativa que define a receita (BOM) com integridade referencial via ON DELETE CASCADE.
+---
 
 🏁 Considerações Finais
 Diferencial de Ouro: O projeto não apenas gerencia dados, mas aplica conceitos de Ciência da Computação (Problema da Mochila) para resolver problemas reais de logística e produção.
