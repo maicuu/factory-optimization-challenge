@@ -34,23 +34,28 @@ Implementamos um **Algoritmo Guloso baseado em Densidade de Lucro (Profit Densit
 
 ## 🐳 Como Executar (Docker)
 
-O projeto está totalmente containerizado. Certifique-se de ter o Docker e Docker Compose instalados.
+Certifique-se de ter o Docker instalado.
 
-### 1. Clonar o repositório:
-```bash
-git clone [https://github.com/seu-usuario/factory-optimization.git](https://github.com/seu-usuario/factory-optimization.git)
+### 1. Clonar o repositório
+git clone https://github.com/seu-usuario/factory-optimization.git
 cd factory-optimization
-2. Subir o ambiente:
-Bash
+
+### 2. Subir o ambiente
 docker-compose up --build
-3. Acessar as interfaces:
-Frontend: http://localhost:5173
+
+### 3. Interfaces
+* **Frontend:** http://localhost:5173
+* **Swagger Docs:** http://localhost:8080/q/swagger-ui
 
 ---
 
 ## 🧪 Qualidade de Software
 
-Bash
+### Testes Unitários e E2E
+* **Frontend:** Vitest e Vue Test Utils.
+* **E2E:** Cypress.
+
+**Para rodar os testes do frontend:**
 cd frontend
 npm test
 
@@ -63,9 +68,4 @@ npm test
 
 ---
 
-🏁 Considerações Finais
-Diferencial de Ouro: O projeto não apenas gerencia dados, mas aplica conceitos de Ciência da Computação (Problema da Mochila) para resolver problemas reais de logística e produção.
-
-Seed Data: O banco de dados já inicializa com dados reais para permitir testes imediatos das funcionalidades de otimização.
-
-Desenvolvido por Maicon Wendel - Desafio de Otimização de Fábrica 2026.
+Desenvolvido por **Maicon Wendel** - 2026.
