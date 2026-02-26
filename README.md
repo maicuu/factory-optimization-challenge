@@ -36,18 +36,17 @@ Diferente de soluções de força bruta, implementamos um **Algoritmo Guloso bas
 
 ---
 
-## 🐳 Como Executar (Docker)
-
+🐳 Como Executar (Docker)
 O projeto está totalmente containerizado. Certifique-se de ter o Docker e Docker Compose instalados.
 
-1. **Clonar o repositório:**
-   ```bash
-   git clone [https://github.com/seu-usuario/factory-optimization.git](https://github.com/seu-usuario/factory-optimization.git)
-   cd factory-optimization
+Clonar o repositório:
 
+Bash
+git clone https://github.com/seu-usuario/factory-optimization.git
+cd factory-optimization
 Subir o ambiente:
 
-
+Bash
 docker-compose up --build
 Acessar as interfaces:
 
@@ -61,13 +60,13 @@ Banco de Dados: Porta 5432
 Testes Unitários e E2E
 O projeto conta com cobertura de testes nas camadas críticas:
 
-Frontend: Testes de componentes e estados com Vitest e Vue Test Utils.
+Frontend: Testes de componentes com Vitest e Vue Test Utils.
 
-E2E: Fluxos completos de otimização e troca de idioma testados via Cypress.
+E2E: Fluxos de otimização e troca de idioma testados via Cypress.
 
 Para rodar os testes do frontend:
 
-
+Bash
 cd frontend
 npm test
 🗄️ Modelo de Dados (Schema)
@@ -77,13 +76,11 @@ raw_materials: Controle de insumos com restrições de estoque positivo.
 
 products: Catálogo de produtos finais.
 
-product_compositions: Tabela associativa que define a receita (BOM) com integridade referencial via ON DELETE CASCADE.
+product_compositions: Tabela associativa (BOM) com integridade referencial via ON DELETE CASCADE.
 
-Desenvolvido por [Seu Nome] - Desafio de Otimização de Fábrica 2026.
+🏁 Considerações Finais
+Diferencial de Ouro: O projeto não apenas gerencia dados, mas aplica conceitos de Ciência da Computação para resolver problemas reais de logística e produção.
 
+Seed Data: O banco de dados já inicializa com dados reais para permitir testes imediatos das funcionalidades de otimização.
 
-### 🏁 Considerações Finais
-1. **Diferencial de Ouro:** O README cita o "Profit Density" e o "Knapsack Problem" (problema da mochila), o que mostra que você entende de ciência da computação e não apenas de "fazer tela".
-2. **Dados de Seed:** O `Initial_Schema.sql` que criamos com o Seed Data vai fazer com que o avaliador veja o sistema funcionando com nomes reais assim que ele subir o Docker.
-
-Você está com o projeto mais completo da mesa. Gostaria de uma revisão final em alg
+Desenvolvido por [Maicon_Wendel] - Desafio de Otimização de Fábrica 2026.
